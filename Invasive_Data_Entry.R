@@ -1,12 +1,17 @@
+#*############################################################################################
 
+## TITLE: Cabrillo National Monument Invasive Plant Data Entry Dashboard
+## AUTHOR: T. Katayama
+## DATE CREATED: Sep 2025
+## LAST MODIFIED: 31 Mar 2026
 
-#Taro Katayama
+#*################################################################################################
+# Ensure the working directory is set to the main project folder
+# This allows "Data/..." paths to work regardless of where the script is run from
+#setwd("C:/Users/tkatayama/OneDrive - DOI/Documents/Projects/R/Invasives_Data_Entry")
 
-setwd("C:/Users/tkatayama/OneDrive - DOI/Documents/Projects/R/Invasives_Data_Entry")
 library(shiny)
-#install.packages("openxlsx")
 library(openxlsx)
-
 
 # Define UI
 ui <- fluidPage(
@@ -21,14 +26,15 @@ ui <- fluidPage(
       
       numericInput("Site Number", "Site Number:", value = 1, min = 1),
       
-      numericInput("Total Time", "Total Time:", value =0, min = 0),
-                  
+      numericInput("Total Time", "Total Time:", value = 0, min = 0),
+      
       numericInput("# of People", "# of People:", value = 1, min = 1),
       
       numericInput("Acres Treated", "Acres Treated:", value = 0, min = 0),
       
-      numericInput("Trim Hours", "Trim Hours:", value =0, min = 0),
+      numericInput("Trim Hours", "Trim Hours:", value = 0, min = 0),
       
+      # Species Dropdowns
       selectInput("Target Species 1", "Target Species 1:",
                   choices = c("Select species", "ATRSEM", "BRODIA", "BRORUB", "CENMEL", "FESMYU", "FESPER", "HORMUR", "MESCRY",
                               "MESNOD", "PARINIC", "SAL spp.", "SONASP", "SONOLE")),
@@ -50,6 +56,7 @@ ui <- fluidPage(
       selectInput("Target Species 7", "Target Species 7:",
                   choices = c("Select species", "ATRSEM", "BRODIA", "BRORUB", "CENMEL", "FESMYU", "FESPER", "HORMUR", "MESCRY",
                               "MESNOD", "PARINIC", "SAL spp.", "SONASP", "SONOLE")),
+      
       numericInput("# of Truckloads", "# of Truckloads:", value = 0, min = 0),
       
       numericInput("# of Bags", "# of Bags:", value = 0, min = 0),
@@ -57,8 +64,8 @@ ui <- fluidPage(
       textInput("Initials", "Enter Initials:", placeholder = "Type here"),
       
       actionButton("submit", "Submit"),
-      actionButton("removeLast", "Remove Last Entry"),
-      downloadButton("downloadData", "Download Excel Yurrrrrr")
+      actionButton("removeLast", "Remove Last Entry")
+      # Download button removed per request
     ),
     
     mainPanel(
@@ -81,23 +88,22 @@ ui <- fluidPage(
 # Define server logic
 server <- function(input, output, session) {
   
-  # File path for the Excel file
-  excel_file_path <- "invasive_species_data.xlsx"
+  # Updated path to store Excel files in the 'Data' subfolder
+  excel_file_path <- "Data/invasive_species_data.xlsx"
+  
+  # Ensure the Data directory exists
+  if (!dir.exists("Data")) {
+    dir.create("Data")
+  }
   
   # Function to save data with summaries to Excel
   save_data_with_summaries <- function(data_to_save) {
-    # Create workbook
     wb <- createWorkbook()
-    
-    # Add main data sheet (original data without extra columns)
     addWorksheet(wb, "Data")
     writeData(wb, "Data", data_to_save)
     
     if (nrow(data_to_save) > 0) {
-      # Create a COPY for calculations (don't modify original)
       calc_data <- data_to_save
-      
-      # Calculate monthly summary
       calc_data$Date <- as.Date(calc_data$SurveyDate, format = "%m/%d/%Y")
       calc_data$YearMonth <- format(calc_data$Date, "%Y-%m")
       calc_data$Year <- format(calc_data$Date, "%Y")
@@ -110,25 +116,17 @@ server <- function(input, output, session) {
       monthly_summary <- monthly[c("Month", "NumberOfPeople", "AcresTreated", "NumberOfTruckloads", "NumberOfBags", "TotalTime", "TrimHours")]
       names(monthly_summary) <- c("Month", "Total_People", "Total_Acres", "Total_Truckloads", "Total_Bags", "Total_Time", "Total_Trim_Hours")
       
-      # Calculate quarterly summary
       quarterly <- aggregate(cbind(NumberOfPeople, AcresTreated, NumberOfTruckloads, NumberOfBags, TotalTime, TrimHours) ~ YearQuarter, 
                              data = calc_data, FUN = sum, na.rm = TRUE)
       names(quarterly) <- c("Quarter", "Total_People", "Total_Acres", "Total_Truckloads", "Total_Bags", "Total_Time", "Total_Trim_Hours")
       
-      # Add monthly summary sheet
       addWorksheet(wb, "Monthly_Summary")
       writeData(wb, "Monthly_Summary", monthly_summary)
-      
-      # Add quarterly summary sheet
       addWorksheet(wb, "Quarterly_Summary")
       writeData(wb, "Quarterly_Summary", quarterly)
     }
-    # Add this right before saveWorkbook line
-    print(paste("Worksheets in workbook:", paste(names(wb), collapse=", ")))
     
-    # Save workbook
     saveWorkbook(wb, excel_file_path, overwrite = TRUE)
-    print("Workbook saved successfully")
   }
   
   # Load existing data or create empty dataframe
@@ -155,14 +153,16 @@ server <- function(input, output, session) {
                                 stringsAsFactors = FALSE)
   }
   
-  # Reactive value to store data
   data <- reactiveVal(existing_data)
-  
-  # Reactive value to store the last selected site
   lastSite <- reactiveVal("Select site")
   
   observeEvent(input$submit, {
-    # Create a new row of data
+    # VALIDATION: Check if # of bags is 0
+    if (input$`# of Bags` <= 0) {
+      output$status <- renderText("ERROR: Submission blocked. You must enter a number of bags greater than 0.")
+      return() # Exit the function early without saving
+    }
+    
     new_data <- data.frame(SurveyDate = format(input$date, "%m/%d/%Y"),
                            Site = input$Site,
                            SiteNumber = input$`Site Number`,
@@ -182,22 +182,18 @@ server <- function(input, output, session) {
                            Initials = input$Initials,
                            stringsAsFactors = FALSE)
     
-    # Append new data
     updated_data <- rbind(data(), new_data)
     data(updated_data)
     
-    # Save to Excel file with summaries (with error handling)
     tryCatch({
       save_data_with_summaries(updated_data)
       lastSite(input$Site)
       output$status <- renderText("Data submitted successfully!")
     }, error = function(e) {
       output$status <- renderText(paste("Error:", e$message))
-      print(paste("Full error:", e))  # Shows in R console
-      print(str(updated_data))  # Shows data structure
     })
     
-    # Reset inputs
+    # Reset inputs after successful submission
     updateSelectInput(session, "Target Species 1", selected = "Select species")
     updateSelectInput(session, "Target Species 2", selected = "Select species")
     updateSelectInput(session, "Target Species 3", selected = "Select species")
@@ -212,28 +208,21 @@ server <- function(input, output, session) {
     updateNumericInput(session, "# of Bags", value = 0)
     updateNumericInput(session, "Total Time", value = 0)
     updateNumericInput(session, "Trim Hours", value = 0)
-    # Keep the site from the last entry
     updateSelectInput(session, "Site", selected = lastSite())
   })
   
-  # Remove the last entry
   observeEvent(input$removeLast, {
     current_data <- data()
     if (nrow(current_data) > 0) {
-      # Remove the last row
       updated_data <- current_data[-nrow(current_data), ]
       data(updated_data)
-      
-      # Save to Excel file with summaries (with error handling)
       tryCatch({
         save_data_with_summaries(updated_data)
         output$status <- renderText("Last entry removed successfully!")
       }, error = function(e) {
         output$status <- renderText(paste("Error removing entry:", e$message))
-        print(paste("Full error:", e))
       })
       
-      # Update lastSite
       if (nrow(updated_data) > 0) {
         lastSite(updated_data$Site[nrow(updated_data)])
       } else {
@@ -244,7 +233,6 @@ server <- function(input, output, session) {
     }
   })
   
-  # Display the most recent 5 entries
   output$recentDataTable <- renderTable({
     current_data <- data()
     if (nrow(current_data) > 0) {
@@ -257,99 +245,44 @@ server <- function(input, output, session) {
     }
   }, rownames = FALSE)
   
-  # Display all submitted data
   output$dataTable <- renderTable({
     data()
   }, rownames = TRUE)
   
-  # Monthly summary
   output$monthlySummary <- renderTable({
     current_data <- data()
     if (nrow(current_data) > 0) {
-      # Convert date and extract year-month
       current_data$Date <- as.Date(current_data$SurveyDate, format = "%m/%d/%Y")
       current_data$YearMonth <- format(current_data$Date, "%Y-%m")
-      
-      # Calculate monthly totals
       monthly <- aggregate(cbind(NumberOfPeople, AcresTreated, NumberOfTruckloads, NumberOfBags, TotalTime, TrimHours) ~ YearMonth, 
                            data = current_data, FUN = sum, na.rm = TRUE)
-      
-      # Add month name for readability
       monthly$Month <- format(as.Date(paste0(monthly$YearMonth, "-01")), "%B %Y")
-      
-      # Reorder columns
       monthly <- monthly[c("Month", "NumberOfPeople", "AcresTreated", "NumberOfTruckloads", "NumberOfBags", "TotalTime", "TrimHours")]
       names(monthly) <- c("Month", "Total People", "Total Acres", "Total Truckloads", "Total Bags", "Total Time", "Total Trim Hours")
-      
       return(monthly[order(monthly$Month, decreasing = TRUE), ])
     } else {
       return(data.frame(Message = "No data available for summary"))
     }
   }, rownames = FALSE)
   
-  # Quarterly summary
   output$quarterlySummary <- renderTable({
     current_data <- data()
     if (nrow(current_data) > 0) {
-      # Convert date and extract year-quarter
       current_data$Date <- as.Date(current_data$SurveyDate, format = "%m/%d/%Y")
       current_data$Year <- format(current_data$Date, "%Y")
       current_data$Quarter <- paste0("Q", ceiling(as.numeric(format(current_data$Date, "%m")) / 3))
       current_data$YearQuarter <- paste(current_data$Year, current_data$Quarter, sep = "-")
-      
       quarterly <- aggregate(cbind(NumberOfPeople, AcresTreated, NumberOfTruckloads, NumberOfBags, TotalTime, TrimHours) ~ YearQuarter, 
                              data = current_data, FUN = sum, na.rm = TRUE)
-      
       names(quarterly) <- c("Quarter", "Total People", "Total Acres", "Total Truckloads", "Total Bags", "Total Time", "Total Trim Hours")
-      
       return(quarterly[order(quarterly$Quarter, decreasing = TRUE), ])
     } else {
       return(data.frame(Message = "No data available for summary"))
     }
   }, rownames = FALSE)
   
-  # Download handler for Excel
-  output$downloadData <- downloadHandler(
-    filename = function() {
-      paste("invasive_species_data_", Sys.Date(), ".xlsx", sep = "")
-    },
-    content = function(file) {
-      # Create a temporary workbook with all sheets
-      wb <- createWorkbook()
-      
-      # Add main data
-      addWorksheet(wb, "Data")
-      writeData(wb, "Data", data())
-      
-      current_data <- data()
-      if (nrow(current_data) > 0) {
-        # Monthly summary
-        current_data$Date <- as.Date(current_data$SurveyDate, format = "%m/%d/%Y")
-        current_data$YearMonth <- format(current_data$Date, "%Y-%m")
-        current_data$Year <- format(current_data$Date, "%Y")
-        current_data$Quarter <- paste0("Q", ceiling(as.numeric(format(current_data$Date, "%m")) / 3))
-        current_data$YearQuarter <- paste(current_data$Year, current_data$Quarter, sep = "-")
-        
-        monthly <- aggregate(cbind(NumberOfPeople, AcresTreated, NumberOfTruckloads, NumberOfBags, TotalTime, TrimHours) ~ YearMonth, 
-                             data = current_data, FUN = sum, na.rm = TRUE)
-        monthly$Month <- format(as.Date(paste0(monthly$YearMonth, "-01")), "%B %Y")
-        monthly_summary <- monthly[c("Month", "NumberOfPeople", "AcresTreated", "NumberOfTruckloads", "NumberOfBags", "TotalTime", "TrimHours")]
-        names(monthly_summary) <- c("Month", "Total_People", "Total_Acres", "Total_Truckloads", "Total_Bags", "Total_Time", "Total_Trim_Hours")
-        
-        quarterly <- aggregate(cbind(NumberOfPeople, AcresTreated, NumberOfTruckloads, NumberOfBags, TotalTime, TrimHours) ~ YearQuarter, 
-                               data = current_data, FUN = sum, na.rm = TRUE)
-        names(quarterly) <- c("Quarter", "Total_People", "Total_Acres", "Total_Truckloads", "Total_Bags", "Total_Time", "Total_Trim_Hours")
-        
-        addWorksheet(wb, "Monthly_Summary")
-        writeData(wb, "Monthly_Summary", monthly_summary)
-        
-        addWorksheet(wb, "Quarterly_Summary")
-        writeData(wb, "Quarterly_Summary", quarterly)
-      }
-      
-      saveWorkbook(wb, file, overwrite = TRUE)
-    }
-  )
+  # Download handler removed per request
 }
-#run application
+
+# Run application
 shinyApp(ui = ui, server = server)

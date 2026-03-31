@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invasive Species Dashboard - README</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; background-color: #f9f9f9; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; }
+        h3 { color: #16a085; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-family: "Courier New", Courier, monospace; }
+        pre { background: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+        .file-info { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px 0; }
+        .folder-tree { background: #f1f1f1; padding: 10px; border-radius: 5px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Invasive Species Data Entry Dashboard</h1>
+        <p>This R Shiny application records field survey data and maintains an automated Excel database with monthly and quarterly summaries.</p>
+
+        <h2>📁 Project Structure</h2>
+        <div class="folder-tree">
+            Invasives_Data_Entry/<br>
+            ├── Invasive_Data_Entry.R  &nbsp;&nbsp;&nbsp;&lt;-- Run this file<br>
+            └── Data/<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;└── invasive_species_data.xlsx &nbsp;&lt;-- Data saved here
+        </div>
+
+        <h2>🛠 Prerequisites</h2>
+        <p>Ensure you have <strong>R</strong> and <strong>RStudio</strong> installed with these packages:</p>
+        <ul>
+            <li><code>shiny</code></li>
+            <li><code>openxlsx</code></li>
+        </ul>
+
+        <h2>🚀 Getting Started</h2>
+        <ol>
+            <li><strong>Working Directory:</strong> Open the script. The <code>setwd()</code> command is configured for the <code>Invasives_Data_Entry</code> root folder.</li>
+            <li><strong>Launch:</strong> Click <strong>Run App</strong> in RStudio.</li>
+            <li><strong>Data Folder:</strong> The app will automatically create a <code>/Data</code> folder if it doesn't already exist.</li>
+        </ol>
+
+        <div class="file-info">
+            <h3>⚠️ Validation Rule: Bag Count</h3>
+            <p>To ensure data integrity, the app <strong>will not allow submission</strong> if the <strong># of Bags</strong> field is 0. If you attempt to submit with 0 bags, an error message will appear and the data will not be saved.</p>
+        </div>
+
+        <h2>📝 Using the Interface</h2>
+        <h3>Data Entry</h3>
+        <ul>
+            <li><strong>Submission:</strong> Enter your site details, effort metrics, and species. Click <strong>Submit</strong> to append the data to the Excel master file.</li>
+            <li><strong>Smart Reset:</strong> After submitting, most fields reset to default, but the <strong>Site</strong> dropdown stays on your last selection for faster repeat entries.</li>
+            <li><strong>Undo:</strong> Use <strong>Remove Last Entry</strong> to delete the most recent row from the session and the Excel file simultaneously.</li>
+        </ul>
+
+        <h3>Data Viewing</h3>
+        <ul>
+            <li><strong>Live Tables:</strong> View the last 5 entries, a full data log, and automated <strong>Monthly</strong> and <strong>Quarterly</strong> summaries directly in the dashboard.</li>
+            <li><strong>Manual Access:</strong> Because the app saves in real-time, you can simply open the Excel file in the <code>/Data</code> folder to view your full formatted report.</li>
+        </ul>
+
+        <h2>🛑 Important Reminders</h2>
+        <ul>
+            <li><strong>Excel Access:</strong> <strong>Close the Excel file</strong> before clicking Submit in the app. If the file is open in Excel, R will be blocked from saving and you will see a "Permission Denied" error.</li>
+            <li><strong>Summaries:</strong> The Excel file contains three sheets: <code>Data</code>, <code>Monthly_Summary</code>, and <code>Quarterly_Summary</code>.</li>
+        </ul>
+    </div>
+</body>
+</html>
