@@ -1,7 +1,3 @@
-Since you've moved the script to the root and connected to GitHub, a **README.md** (Markdown) is the best choice. GitHub will automatically render this on your repository's front page, making it look professional and easy to read.
-
-Here is the updated content for your `README.md` file:
-
 ---
 
 ```markdown
