@@ -37,7 +37,7 @@ ui <- fluidPage(
       
       # Species Dropdowns
       selectizeInput("Target Species 1", "Target Species 1:",
-                  choices = c("Select species", "ABUTHE", "ACACYC", "AGAAME", "ALOMAC", "ANTCOT", "APIGRA", "ASPASP", "ATRGLA", "ATRSEM", "AVEBAR", "AVEFAT", "BIDPIL", "BRADIS", "BRANIG", "BRATOU", "BROCAT",
+                  choices = c("", "ABUTHE", "ACACYC", "AGAAME", "ALOMAC", "ANTCOT", "APIGRA", "ASPASP", "ATRGLA", "ATRSEM", "AVEBAR", "AVEFAT", "BIDPIL", "BRADIS", "BRANIG", "BRATOU", "BROCAT",
                               "BRODIA", "BROHOR", "BRORUB", "CARMAC", "CAREDU",  "CENMEL", "CHAFOL", "CHEALB", "COTAUS", "CYCLEP", "CYNDAC", "CYPDIF", "DELOSP spp", "DICMIC", "DIGSAN", "DITGRA", "DYSSAM", "EHRERE", 
                               "ELEIND","EMESPI", "ERIBON", "EROBOT", "EROCIC", "EROMOS", "EUCCAM", "EUPMAC", "EUPPEP", "EUPSER", "FESMYU", "FESPER", "FOEVUL", "FURFOE", "GAMSTA", "GLECOR", "HEDRHA", "HELECH", "HIRINC",
                               "HORMUR", "HYPCAN", "HYPGLA", "LACSER", "LAMAUR", "LEPDID", "LIMPER", "LOBERI", "LOBMAR", "LOGGAL", "LYSARV", "LYTHYS", "MALCRO", "MALPAR", "MATDIS", "MEDPOL", "MELALB", "MELIND", "MELREP",
@@ -45,7 +45,7 @@ ui <- fluidPage(
                               "RAPSAT", "RICCOM", "RUMCRI", "SAGAPE", "SALORI", "SAL spp.", "SCHBAR", "SILGAL", "SISIRI", "SISORI", "SOLNIG", "SOLLYC", "SOLPHY", "SONASP", "SONOLE","SPEBOC", "SPEVIL", "SPOIND", "STENEG", "STIMIL",
                               "TETTET", "TRIHIR", "VACFAR", "VERARV")),
       selectizeInput("Target Species 2", "Target Species 2:",
-                  choices = c("Select species", "ABUTHE", "ACACYC", "AGAAME", "ALOMAC", "ANTCOT", "APIGRA", "ASPASP", "ATRGLA", "ATRSEM", "AVEBAR", "AVEFAT", "BIDPIL", "BRADIS", "BRANIG", "BRATOU", "BROCAT",
+                  choices = c("", "ABUTHE", "ACACYC", "AGAAME", "ALOMAC", "ANTCOT", "APIGRA", "ASPASP", "ATRGLA", "ATRSEM", "AVEBAR", "AVEFAT", "BIDPIL", "BRADIS", "BRANIG", "BRATOU", "BROCAT",
                               "BRODIA", "BROHOR", "BRORUB", "CARMAC", "CAREDU",  "CENMEL", "CHAFOL", "CHEALB", "COTAUS", "CYCLEP", "CYNDAC", "CYPDIF", "DELOSP spp", "DICMIC", "DIGSAN", "DITGRA", "DYSSAM", "EHRERE", 
                               "ELEIND","EMESPI", "ERIBON", "EROBOT", "EROCIC", "EROMOS", "EUCCAM", "EUPMAC", "EUPPEP", "EUPSER", "FESMYU", "FESPER", "FOEVUL", "FURFOE", "GAMSTA", "GLECOR", "HEDRHA", "HELECH", "HIRINC",
                               "HORMUR", "HYPCAN", "HYPGLA", "LACSER", "LAMAUR", "LEPDID", "LIMPER", "LOBERI", "LOBMAR", "LOGGAL", "LYSARV", "LYTHYS", "MALCRO", "MALPAR", "MATDIS", "MEDPOL", "MELALB", "MELIND", "MELREP",
@@ -53,7 +53,7 @@ ui <- fluidPage(
                               "RAPSAT", "RICCOM", "RUMCRI", "SAGAPE", "SALORI", "SAL spp.", "SCHBAR", "SILGAL", "SISIRI", "SISORI", "SOLNIG", "SOLLYC", "SOLPHY", "SONASP", "SONOLE","SPEBOC", "SPEVIL", "SPOIND", "STENEG", "STIMIL",
                               "TETTET", "TRIHIR", "VACFAR", "VERARV")),
       selectizeInput("Target Species 3", "Target Species 3:",
-                  choices = c("Select species", "ABUTHE", "ACACYC", "AGAAME", "ALOMAC", "ANTCOT", "APIGRA", "ASPASP", "ATRGLA", "ATRSEM", "AVEBAR", "AVEFAT", "BIDPIL", "BRADIS", "BRANIG", "BRATOU", "BROCAT",
+                  choices = c("", "ABUTHE", "ACACYC", "AGAAME", "ALOMAC", "ANTCOT", "APIGRA", "ASPASP", "ATRGLA", "ATRSEM", "AVEBAR", "AVEFAT", "BIDPIL", "BRADIS", "BRANIG", "BRATOU", "BROCAT",
                               "BRODIA", "BROHOR", "BRORUB", "CARMAC", "CAREDU",  "CENMEL", "CHAFOL", "CHEALB", "COTAUS", "CYCLEP", "CYNDAC", "CYPDIF", "DELOSP spp", "DICMIC", "DIGSAN", "DITGRA", "DYSSAM", "EHRERE", 
                               "ELEIND","EMESPI", "ERIBON", "EROBOT", "EROCIC", "EROMOS", "EUCCAM", "EUPMAC", "EUPPEP", "EUPSER", "FESMYU", "FESPER", "FOEVUL", "FURFOE", "GAMSTA", "GLECOR", "HEDRHA", "HELECH", "HIRINC",
                               "HORMUR", "HYPCAN", "HYPGLA", "LACSER", "LAMAUR", "LEPDID", "LIMPER", "LOBERI", "LOBMAR", "LOGGAL", "LYSARV", "LYTHYS", "MALCRO", "MALPAR", "MATDIS", "MEDPOL", "MELALB", "MELIND", "MELREP",
